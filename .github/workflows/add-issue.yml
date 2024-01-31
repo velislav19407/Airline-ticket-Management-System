@@ -1,0 +1,26 @@
+name: Add Issue to Project
+
+on:
+  issues:
+    types:
+      - opened
+
+jobs:
+  add-issue-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add issue to project
+        uses: github-script@7.3.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const projectNumber = 1;
+            const columnId = '47fc9ee4';
+            
+            await github.projects.createCard({
+              project_id: projectNumber,
+              column_id: columnId,
+              content_id: issue.id,
+              content_type: 'Issue'
+            });
