@@ -42,7 +42,7 @@ jobs:
               columnId = newColumn.data.id;
             }
 
-            // Add the issue to the project column
+
             await github.projects.createCard({
               column_id: columnId,
               content_id: issue.id,
