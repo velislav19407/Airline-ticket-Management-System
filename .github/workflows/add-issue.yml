@@ -6,7 +6,7 @@ on:
       - opened
 
 jobs:
-
+  add-issue-to-project:
     runs-on: ubuntu-latest
     steps:
       - name: Add issue to project
@@ -18,21 +18,18 @@ jobs:
             const issue = context.payload.issue;
             const projectNumber = 1;
             const columnName = 'TODO';
-
-
+            
             const columns = await github.projects.listColumns({
               project_id: projectNumber
             });
 
             let columnId = null;
 
-
             columns.data.forEach((column) => {
               if (column.name === columnName) {
                 columnId = column.id;
               }
             });
-
 
             if (!columnId) {
               const newColumn = await github.projects.createColumn({
@@ -41,7 +38,6 @@ jobs:
               });
               columnId = newColumn.data.id;
             }
-
 
             await github.projects.createCard({
               column_id: columnId,
