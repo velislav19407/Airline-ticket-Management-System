@@ -6,11 +6,11 @@ on:
       - opened
 
 jobs:
-  add-issue-to-project:
+
     runs-on: ubuntu-latest
     steps:
       - name: Add issue to project
-        uses: actions/github-script@7.3.0
+        uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -19,21 +19,21 @@ jobs:
             const projectNumber = 1;
             const columnName = 'TODO';
 
-          
+
             const columns = await github.projects.listColumns({
               project_id: projectNumber
             });
 
             let columnId = null;
 
-        
+
             columns.data.forEach((column) => {
               if (column.name === columnName) {
                 columnId = column.id;
               }
             });
 
-   
+
             if (!columnId) {
               const newColumn = await github.projects.createColumn({
                 project_id: projectNumber,
@@ -48,3 +48,4 @@ jobs:
               content_id: issue.id,
               content_type: 'Issue'
             });
+
