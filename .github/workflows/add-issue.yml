@@ -1,47 +1,22 @@
-name: Add Issue to Project
-
+name: add-issue
 on:
   issues:
     types:
       - opened
 
 jobs:
-  add-issue-to-project:
+  add-to-project:
     runs-on: ubuntu-latest
     steps:
-      - name: Add issue to project
-        uses: actions/github-script@v5
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const context = github.context;
-            const issue = context.payload.issue;
-            const projectNumber = 1;
-            const columnName = 'TODO';
-            
-            const columns = await github.projects.listColumns({
-              project_id: projectNumber
-            });
+      - name: Add to Project
+        run: |
 
-            let columnId = null;
+          ISSUE_NUMBER=$(jq --raw-output .issue.number $GITHUB_EVENT_PATH)
+          REPO_NAME=$(jq --raw-output .repository.name $GITHUB_EVENT_PATH)
+          
 
-            columns.data.forEach((column) => {
-              if (column.name === columnName) {
-                columnId = column.id;
-              }
-            });
-
-            if (!columnId) {
-              const newColumn = await github.projects.createColumn({
-                project_id: projectNumber,
-                name: columnName
-              });
-              columnId = newColumn.data.id;
-            }
-
-            await github.projects.createCard({
-              column_id: columnId,
-              content_id: issue.id,
-              content_type: 'Issue'
-            });
+          curl -X POST -H "Accept: application/vnd.github.inertia-preview+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/projects/1/columns/47fc9ee4/cards" \
+            -d "{\"content_id\": $ISSUE_NUMBER, \"content_type\": \"Issue\"}"
 
